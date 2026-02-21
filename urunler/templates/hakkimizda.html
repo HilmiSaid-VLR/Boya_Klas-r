@@ -1,0 +1,817 @@
+{% extends 'base.html' %}
+
+{% block title %}Hakkımızda - BoyaTech{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        padding: 8rem 2rem 4rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -20%;
+        width: 600px;
+        height: 600px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: pulse 10s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.1; }
+        50% { transform: scale(1.1); opacity: 0.2; }
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .page-header h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+    }
+
+    /* About Section */
+    .about-section {
+        padding: 5rem 2rem;
+    }
+
+    .about-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+
+    .about-image {
+        position: relative;
+    }
+
+    .about-image-main {
+        width: 100%;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .about-image-float {
+        position: absolute;
+        bottom: -30px;
+        right: -30px;
+        width: 200px;
+        background: var(--bg-white);
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .about-image-float .number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--accent), var(--gradient-end));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .about-image-float .label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .about-content h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .about-content p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .about-feature {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-light);
+        border-radius: var(--radius-sm);
+    }
+
+    .about-feature i {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .about-feature span {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Mission Vision Section */
+    .mission-section {
+        padding: 5rem 2rem;
+        background: var(--bg-light);
+    }
+
+    .mission-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+    }
+
+    .mission-card {
+        background: var(--bg-white);
+        padding: 3rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mission-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .mission-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .mission-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .mission-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .mission-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    /* Values Section */
+    .values-section {
+        padding: 5rem 2rem;
+    }
+
+    .values-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .value-card {
+        text-align: center;
+        padding: 2.5rem 2rem;
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+
+    .value-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(102, 126, 234, 0.2);
+    }
+
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--gradient-start);
+        transition: var(--transition);
+    }
+
+    .value-card:hover .value-icon {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .value-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .value-card p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    /* Timeline Section */
+    .timeline-section {
+        padding: 5rem 2rem;
+        background: var(--bg-light);
+    }
+
+    .timeline {
+        max-width: 1000px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .timeline-item {
+        display: flex;
+        justify-content: flex-end;
+        padding-right: 50%;
+        position: relative;
+        margin-bottom: 3rem;
+    }
+
+    .timeline-item:nth-child(even) {
+        justify-content: flex-start;
+        padding-right: 0;
+        padding-left: 50%;
+    }
+
+    .timeline-content {
+        max-width: 400px;
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        margin-right: 2rem;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-right: 0;
+        margin-left: 2rem;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        background: white;
+        border: 4px solid var(--accent);
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .timeline-year {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent), var(--gradient-end));
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .timeline-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-desc {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    /* Team Section */
+    .team-section {
+        padding: 5rem 2rem;
+    }
+
+    .team-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .team-card {
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .team-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4rem;
+    }
+
+    .team-info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .team-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .team-role {
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .team-social {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .team-social a {
+        width: 36px;
+        height: 36px;
+        background: var(--bg-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .team-social a:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Partners Section */
+    .partners-section {
+        padding: 4rem 2rem;
+        background: var(--bg-light);
+    }
+
+    .partners-grid {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 3rem;
+        opacity: 0.6;
+    }
+
+    .partner-logo {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-secondary);
+        filter: grayscale(100%);
+        transition: var(--transition);
+    }
+
+    .partner-logo:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .about-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .about-image-float {
+            right: 10px;
+            bottom: -20px;
+            width: 150px;
+            padding: 1rem;
+        }
+
+        .mission-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline::before {
+            left: 20px;
+        }
+
+        .timeline-item,
+        .timeline-item:nth-child(even) {
+            justify-content: flex-start;
+            padding-right: 0;
+            padding-left: 60px;
+        }
+
+        .timeline-content,
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        .timeline-dot {
+            left: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-features {
+            grid-template-columns: 1fr;
+        }
+
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .team-grid {
+            grid-template-columns: 1fr;
+            max-width: 400px;
+        }
+
+        .partners-grid {
+            gap: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="page-header-content fade-in">
+        <h1>Hakkımızda</h1>
+        <p>20 yıllık tecrübemizle endüstriyel boya otomasyonunda öncüyüz</p>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="about-grid">
+        <div class="about-image fade-in">
+            <div style="width:100%; height:500px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 28px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-industry" style="font-size: 8rem; color: white; opacity: 0.3;"></i>
+            </div>
+            <div class="about-image-float">
+                <div class="number">20+</div>
+                <div class="label">Yıllık Tecrübe</div>
+            </div>
+        </div>
+        <div class="about-content fade-in">
+            <h2>Endüstriyel Boya Otomasyonunda Güvenilir Çözüm Ortağınız</h2>
+            <p>
+                2006 yılından bu yana endüstriyel boya otomasyon sistemleri alanında faaliyet gösteren 
+                firmamız, müşterilerine kaliteli ve verimli çözümler sunmayı ilke edinmiştir.
+            </p>
+            <p>
+                Modern üretim tesisimizde, alanında uzman mühendis kadromuz ve teknik ekibimizle 
+                birlikte, en son teknolojiyi kullanarak müşterilerimizin ihtiyaçlarına özel çözümler 
+                üretiyoruz.
+            </p>
+            <div class="about-features">
+                <div class="about-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Kalite Garantisi</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Hızlı Teslimat</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check"></i>
+                    <span>7/24 Destek</span>
+                </div>
+                <div class="about-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Uzman Kadro</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="mission-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Misyon & Vizyon</span>
+        <h2 class="section-title">Değerlerimiz</h2>
+    </div>
+    <div class="mission-grid">
+        <div class="mission-card fade-in">
+            <div class="mission-icon">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <h3>Misyonumuz</h3>
+            <p>
+                Endüstriyel boya otomasyon sektöründe, müşterilerimize en kaliteli ürün ve 
+                hizmetleri sunarak üretim süreçlerini optimize etmelerine yardımcı olmak. 
+                Sürekli yenilikçilik ve teknolojik gelişim ile sektörde öncü olmak.
+            </p>
+        </div>
+        <div class="mission-card fade-in">
+            <div class="mission-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3>Vizyonumuz</h3>
+            <p>
+                Global ölçekte tanınan, sürdürülebilir ve yenilikçi çözümleriyle 
+                endüstriyel boya otomasyon sektörünün lider firması olmak. 
+                Müşteri memnuniyetini en üst seviyede tutarak sektör standartlarını belirlemek.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Temel İlkelerimiz</span>
+        <h2 class="section-title">Değerlerimiz</h2>
+    </div>
+    <div class="values-grid">
+        <div class="value-card fade-in">
+            <div class="value-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <h3>Kalite</h3>
+            <p>
+                Tüm ürün ve hizmetlerimizde en yüksek kalite standartlarını 
+                benimseyerek müşterilerimize güvenilir çözümler sunuyoruz.
+            </p>
+        </div>
+        <div class="value-card fade-in">
+            <div class="value-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3>Yenilikçilik</h3>
+            <p>
+                Sürekli araştırma ve geliştirme faaliyetleriyle sektördeki 
+                son teknolojileri takip ediyor ve uyguluyoruz.
+            </p>
+        </div>
+        <div class="value-card fade-in">
+            <div class="value-icon">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <h3>Güvenilirlik</h3>
+            <p>
+                Verdiğimiz sözleri tutarak, şeffaf iletişim ve dürüst 
+                ticaret anlayışıyla çalışıyoruz.
+            </p>
+        </div>
+        <div class="value-card fade-in">
+            <div class="value-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>Müşteri Odaklılık</h3>
+            <p>
+                Müşterilerimizin ihtiyaçlarını anlayarak, onlara özel 
+                çözümler geliştiriyor ve memnuniyetlerini ön planda tutuyoruz.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline Section -->
+<section class="timeline-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Yolculuğumuz</span>
+        <h2 class="section-title">Tarihçemiz</h2>
+    </div>
+    <div class="timeline">
+        <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-year">2006</span>
+                <h4 class="timeline-title">Kuruluş</h4>
+                <p class="timeline-desc">
+                    Bursa'da küçük bir atölyede endüstriyel boya otomasyon sistemleri 
+                    üretimine başladık.
+                </p>
+            </div>
+        </div>
+        <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-year">2010</span>
+                <h4 class="timeline-title">Büyüme</h4>
+                <p class="timeline-desc">
+                    İlk büyük ölçekli üretim tesisimizi kurarak kapasitemizi 
+                    artırdık ve ilk ihracatımızı gerçekleştirdik.
+                </p>
+            </div>
+        </div>
+        <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-year">2015</span>
+                <h4 class="timeline-title">Sertifikasyon</h4>
+                <p class="timeline-desc">
+                    ISO 9001 ve CE belgelerini alarak kalite yönetim sistemimizi 
+                    uluslararası standartlara uygun hale getirdik.
+                </p>
+            </div>
+        </div>
+        <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-year">2020</span>
+                <h4 class="timeline-title">İnovasyon</h4>
+                <p class="timeline-desc">
+                    Akıllı otomasyon sistemleri ve IoT entegrasyonu ile 
+                    sektörde dijital dönüşümü başlattık.
+                </p>
+            </div>
+        </div>
+        <div class="timeline-item fade-in">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+                <span class="timeline-year">2026</span>
+                <h4 class="timeline-title">Gelecek</h4>
+                <p class="timeline-desc">
+                    Yapay zeka destekli otomasyon sistemleri ve sürdürülebilir 
+                    üretim teknolojileriyle geleceği şekillendiriyoruz.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Ekibimiz</span>
+        <h2 class="section-title">Profesyonel Kadromuz</h2>
+    </div>
+    <div class="team-grid">
+        <div class="team-card fade-in">
+            <div class="team-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="team-info">
+                <h4 class="team-name">Ahmet Yılmaz</h4>
+                <p class="team-role">Genel Müdür</p>
+                <div class="team-social">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="team-card fade-in">
+            <div class="team-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="team-info">
+                <h4 class="team-name">Mehmet Kaya</h4>
+                <p class="team-role">Teknik Direktör</p>
+                <div class="team-social">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="team-card fade-in">
+            <div class="team-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="team-info">
+                <h4 class="team-name">Ayşe Demir</h4>
+                <p class="team-role">Ar-Ge Müdürü</p>
+                <div class="team-social">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="team-card fade-in">
+            <div class="team-image">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="team-info">
+                <h4 class="team-name">Can Özdemir</h4>
+                <p class="team-role">Satış Müdürü</p>
+                <div class="team-social">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section class="partners-section">
+    <div class="section-header fade-in">
+        <span class="section-label">İş Ortaklarımız</span>
+        <h2 class="section-title">Güvendiğimiz Markalar</h2>
+    </div>
+    <div class="partners-grid">
+        <div class="partner-logo">SIEMENS</div>
+        <div class="partner-logo">SCHNEIDER</div>
+        <div class="partner-logo">OMRON</div>
+        <div class="partner-logo">ABB</div>
+        <div class="partner-logo">FESTO</div>
+        <div class="partner-logo">BOSCH</div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,891 @@
+{% extends 'base.html' %}
+
+{% block title %}İletişim - BoyaTech{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        padding: 8rem 2rem 4rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: float 15s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-30px, 30px); }
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .page-header h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+    }
+
+    /* Contact Section */
+    .contact-section {
+        padding: 5rem 2rem;
+    }
+
+    .contact-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 4rem;
+    }
+
+    /* Contact Info */
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        display: flex;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .info-card:hover {
+        transform: translateX(10px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .info-icon {
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .info-content h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .info-content p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .info-content a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .info-content a:hover {
+        color: var(--gradient-end);
+    }
+
+    /* Social Links */
+    .social-card {
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-top: 1rem;
+    }
+
+    .social-card h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-link {
+        width: 50px;
+        height: 50px;
+        background: var(--bg-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 1.25rem;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .social-link:hover {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Contact Form */
+    .contact-form-wrapper {
+        background: var(--bg-white);
+        padding: 3rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-header h3 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: var(--text-secondary);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid var(--bg-light);
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 1rem;
+        color: var(--text-primary);
+        background: var(--bg-light);
+        transition: var(--transition);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--gradient-start);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-light);
+    }
+
+    textarea.form-input {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .form-select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5568' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 3rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, var(--accent), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(233, 69, 96, 0.4);
+    }
+
+    .submit-btn i {
+        transition: var(--transition);
+    }
+
+    .submit-btn:hover i {
+        transform: translateX(5px);
+    }
+
+    /* Map Section */
+    .map-section {
+        padding: 0 2rem 5rem;
+    }
+
+    .map-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .map-wrapper {
+        height: 450px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .map-placeholder {
+        text-align: center;
+        color: white;
+    }
+
+    .map-placeholder i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+
+    .map-placeholder p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+    }
+
+    .map-info {
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .map-address {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .map-address i {
+        width: 50px;
+        height: 50px;
+        background: var(--bg-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        font-size: 1.25rem;
+    }
+
+    .map-address-text h4 {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .map-address-text p {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .map-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        background: var(--bg-light);
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .map-btn:hover {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 5rem 2rem;
+        background: var(--bg-light);
+    }
+
+    .faq-grid {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: var(--bg-white);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .faq-question {
+        width: 100%;
+        padding: 1.5rem;
+        background: none;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        text-align: left;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .faq-question:hover {
+        background: var(--bg-light);
+    }
+
+    .faq-question i {
+        transition: var(--transition);
+        color: var(--accent);
+    }
+
+    .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 500px;
+    }
+
+    .faq-content {
+        padding: 0 1.5rem 1.5rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    /* Success Modal */
+    .success-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+    }
+
+    .success-modal.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .success-content {
+        background: white;
+        padding: 3rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        max-width: 400px;
+        transform: scale(0.9);
+        transition: var(--transition);
+    }
+
+    .success-modal.active .success-content {
+        transform: scale(1);
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.5rem;
+        color: white;
+        box-shadow: 0 20px 40px rgba(72, 187, 120, 0.3);
+    }
+
+    .success-content h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .success-content p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .success-btn {
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .success-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .contact-form-wrapper {
+            order: -1;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .map-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .map-address {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .contact-form-wrapper {
+            padding: 2rem;
+        }
+
+        .info-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .info-icon {
+            margin: 0 auto;
+        }
+
+        .social-links {
+            justify-content: center;
+        }
+
+        .map-wrapper {
+            height: 300px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-form-wrapper {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .success-content {
+            padding: 2rem;
+            margin: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="page-header-content fade-in">
+        <h1>İletişim</h1>
+        <p>Sorularınız için bize ulaşın, en kısa sürede dönüş yapacağız</p>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="contact-grid">
+        <div class="contact-info">
+            <div class="info-card fade-in">
+                <div class="info-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="info-content">
+                    <h4>Adres</h4>
+                    <p>
+                        Organize Sanayi Bölgesi<br>
+                        4. Cadde No:12<br>
+                        16140 Nilüfer / Bursa
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-card fade-in">
+                <div class="info-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="info-content">
+                    <h4>Telefon</h4>
+                    <p>
+                        <a href="tel:+902241234567">+90 224 123 45 67</a><br>
+                        <a href="tel:+902241234568">+90 224 123 45 68</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-card fade-in">
+                <div class="info-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="info-content">
+                    <h4>E-posta</h4>
+                    <p>
+                        <a href="mailto:info@boyatech.com">info@boyatech.com</a><br>
+                        <a href="mailto:satis@boyatech.com">satis@boyatech.com</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-card fade-in">
+                <div class="info-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="info-content">
+                    <h4>Çalışma Saatleri</h4>
+                    <p>
+                        Pazartesi - Cuma: 08:00 - 18:00<br>
+                        Cumartesi: 09:00 - 13:00
+                    </p>
+                </div>
+            </div>
+
+            <div class="social-card fade-in">
+                <h4>Bizi Takip Edin</h4>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form-wrapper fade-in">
+            <div class="form-header">
+                <h3>Bize Mesaj Gönderin</h3>
+                <p>Formu doldurun, uzman ekibimiz size en kısa sürede dönüş yapsın.</p>
+            </div>
+
+            <form id="contactForm" onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Adınız</label>
+                        <input type="text" class="form-input" placeholder="Adınızı girin" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Soyadınız</label>
+                        <input type="text" class="form-input" placeholder="Soyadınızı girin" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" class="form-input" placeholder="ornek@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <input type="tel" class="form-input" placeholder="05XX XXX XX XX">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Konu</label>
+                    <select class="form-input form-select" required>
+                        <option value="">Konu seçin</option>
+                        <option value="urun">Ürün Bilgisi</option>
+                        <option value="teklif">Fiyat Teklifi</option>
+                        <option value="servis">Teknik Servis</option>
+                        <option value="yedek">Yedek Parça</option>
+                        <option value="diger">Diğer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Mesajınız</label>
+                    <textarea class="form-input" placeholder="Mesajınızı buraya yazın..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Gönder</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="map-container fade-in">
+        <div class="map-wrapper">
+            <div class="map-placeholder">
+                <i class="fas fa-map-marked-alt"></i>
+                <p>Google Maps Entegrasyonu</p>
+                <small>API Key ile harita eklenebilir</small>
+            </div>
+        </div>
+        <div class="map-info">
+            <div class="map-address">
+                <i class="fas fa-building"></i>
+                <div class="map-address-text">
+                    <h4>BoyaTech Merkez Ofis</h4>
+                    <p>Organize Sanayi Bölgesi, 4. Cadde No:12, Bursa</p>
+                </div>
+            </div>
+            <a href="https://maps.google.com" target="_blank" class="map-btn">
+                <i class="fas fa-directions"></i>
+                Yol Tarifi Al
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="section-header fade-in">
+        <span class="section-label">SSS</span>
+        <h2 class="section-title">Sıkça Sorulan Sorular</h2>
+    </div>
+    <div class="faq-grid">
+        <div class="faq-item fade-in">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Ürünlerinizin garanti süresi ne kadar?</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-content">
+                    Tüm ürünlerimiz 2 yıl garantilidir. Garanti süresi içinde oluşan arızalar 
+                    için ücretsiz teknik servis hizmeti sunuyoruz. Garanti kapsamı ve koşulları 
+                    için detaylı bilgi almak isteyen müşterilerimiz bizimle iletişime geçebilir.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item fade-in">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Türkiye'nin her yerine teslimat yapıyor musunuz?</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-content">
+                    Evet, Türkiye'nin tüm illerine özel ambalajlama ile güvenli teslimat 
+                    sağlıyoruz. Ayrıca yurtdışı siparişleriniz için de özel lojistik 
+                    çözümlerimiz bulunmaktadır.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item fade-in">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Teknik servis hizmeti sunuyor musunuz?</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-content">
+                    Evet, uzman teknik ekibimiz 7/24 destek hizmeti sunmaktadır. Yerinde 
+                    servis, uzaktan destek ve bakım anlaşmaları gibi çeşitli hizmet 
+                    paketlerimiz mevcuttur.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item fade-in">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Özel sipariş ve özelleştirme yapıyor musunuz?</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-content">
+                    Evet, müşterilerimizin özel ihtiyaçlarına göre sistemlerimizi 
+                    özelleştirebiliyoruz. Özel kapasite, boyut ve fonksiyon talepleriniz 
+                    için teknik ekibimizle görüşebilirsiniz.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item fade-in">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Yedek parça temini nasıl sağlanıyor?</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-content">
+                    Tüm yedek parçalarımız stoklarımızda mevcuttur. Acil durumlar için 
+                    aynı gün kargo imkanı sunuyoruz. Yedek parça siparişlerinizi web 
+                    sitemizden, telefonla veya e-posta ile verebilirsiniz.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Modal -->
+<div class="success-modal" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <h3>Mesajınız Gönderildi!</h3>
+        <p>En kısa sürede size dönüş yapacağız.</p>
+        <button class="success-btn" onclick="closeSuccessModal()">Tamam</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFaq(button) {
+        const faqItem = button.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Open clicked item if it wasn't active
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        
+        // Show success modal
+        document.getElementById('successModal').classList.add('active');
+        
+        // Reset form
+        document.getElementById('contactForm').reset();
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.remove('active');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('successModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSuccessModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSuccessModal();
+        }
+    });
+</script>
+{% endblock %}

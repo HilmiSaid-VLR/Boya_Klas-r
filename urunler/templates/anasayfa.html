@@ -1,0 +1,922 @@
+{% extends 'base.html' %}
+
+{% block title %}Anasayfa - BoyaTech{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Products Grid */
+    .products-section {
+        padding: 2rem 2rem 5rem;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* Product Card - Modern Glassmorphism */
+    .product-card {
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: var(--shadow-lg), 0 0 60px rgba(102, 126, 234, 0.15);
+        border-color: rgba(102, 126, 234, 0.2);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.1);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: var(--shadow-sm);
+        z-index: 2;
+    }
+
+    .product-actions {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: var(--transition);
+    }
+
+    .product-card:hover .product-actions {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .action-btn:hover {
+        background: var(--accent);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .product-content {
+        padding: 1.5rem;
+    }
+
+    .product-category {
+        color: var(--accent);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--accent), var(--gradient-end));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .product-price .currency {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .view-details {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .product-card:hover .view-details {
+        color: var(--accent);
+        gap: 0.75rem;
+    }
+
+    /* Product Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal {
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: scale(0.9) translateY(20px);
+        transition: var(--transition);
+        box-shadow: 0 50px 100px rgba(0,0,0,0.3);
+    }
+
+    .modal-overlay.active .modal {
+        transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+        position: relative;
+        height: 300px;
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+    }
+
+    .modal-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 45px;
+        height: 45px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        font-size: 1.25rem;
+        transition: var(--transition);
+        z-index: 10;
+    }
+
+    .modal-close:hover {
+        background: var(--accent);
+        color: white;
+        transform: rotate(90deg);
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-category {
+        color: var(--accent);
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .modal-price {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--accent), var(--gradient-end));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-description {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .parts-section {
+        background: var(--bg-light);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .parts-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .parts-title i {
+        color: var(--accent);
+    }
+
+    .parts-list {
+        list-style: none;
+    }
+
+    .part-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .part-item:last-child {
+        border-bottom: none;
+    }
+
+    .part-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .part-name i {
+        color: var(--accent);
+        font-size: 0.875rem;
+    }
+
+    .part-price {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-actions .btn {
+        flex: 1;
+        min-width: 200px;
+        justify-content: center;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        padding: 4rem 2rem;
+        margin: 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -20%;
+        width: 600px;
+        height: 600px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 50%;
+    }
+
+    .stats-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-item {
+        text-align: center;
+        color: white;
+    }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.75rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255,255,255,0.7);
+        font-size: 0.9rem;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 5rem 2rem;
+        background: var(--bg-light);
+    }
+
+    .features-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: var(--bg-white);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(102, 126, 234, 0.2);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .feature-desc {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 5rem 2rem;
+        text-align: center;
+    }
+
+    .cta-box {
+        max-width: 800px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        border-radius: var(--radius-lg);
+        padding: 4rem 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-box::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-desc {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-btn {
+        background: white;
+        color: var(--gradient-end);
+        padding: 1rem 2.5rem;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .cta-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .product-image-wrapper {
+            height: 200px;
+        }
+
+        .modal {
+            max-height: 95vh;
+        }
+
+        .modal-header {
+            height: 200px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+        }
+
+        .modal-price {
+            font-size: 1.75rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+        }
+
+        .cta-title {
+            font-size: 1.75rem;
+        }
+
+        .modal-actions .btn {
+            min-width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .products-section {
+            padding: 1rem 1rem 3rem;
+        }
+
+        /* Keep two products side-by-side on most mobile screens;
+           switch to one column only on very narrow devices if needed. */
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-star"></i>
+            2026 Yenilikçi Çözümler
+        </div>
+        <h1 class="hero-title fade-in">
+            Endüstriyel Boya<br>Otomasyon Sistemleri
+        </h1>
+        <p class="hero-subtitle fade-in">
+            20 yıllık tecrübemizle, üretim hattınızı verimlilik ve kalite odaklı 
+            çözümlerle güçlendiriyoruz.
+        </p>
+        <div class="hero-cta fade-in">
+            <a href="#products" class="btn btn-primary">
+                <i class="fas fa-th-large"></i>
+                Ürünleri Keşfet
+            </a>
+            <a href="{% url 'hakkimizda' %}" class="btn btn-secondary">
+                <i class="fas fa-info-circle"></i>
+                Daha Fazla Bilgi
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-item fade-in">
+            <div class="stat-icon">
+                <i class="fas fa-industry"></i>
+            </div>
+            <div class="stat-number" data-count="500">0</div>
+            <div class="stat-label">Başarılı Proje</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-number" data-count="350">0</div>
+            <div class="stat-label">Mutlu Müşteri</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div class="stat-number" data-count="20">0</div>
+            <div class="stat-label">Yıllık Tecrübe</div>
+        </div>
+        <div class="stat-item fade-in">
+            <div class="stat-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div class="stat-number" data-count="24">0</div>
+            <div class="stat-label">/7 Destek</div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="products-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Kataloğumuz</span>
+        <h2 class="section-title">Premium Ürünlerimiz</h2>
+        <p class="section-desc">
+            Endüstriyel boya otomasyonu için özenle tasarlanmış, 
+            yüksek kaliteli ekipmanlarımızı keşfedin.
+        </p>
+    </div>
+
+    <div class="products-grid">
+        {% for cihaz in cihazlar %}
+        <div class="product-card fade-in" onclick="openModal({{ cihaz.id }}, '{{ cihaz.isim|escapejs }}', '{{ cihaz.kisa_aciklama|escapejs }}', '{{ cihaz.detayli_aciklama|escapejs }}', '{{ cihaz.fiyat }}', '{% if cihaz.resim %}{{ cihaz.resim.url }}{% endif %}')">
+            <div class="product-image-wrapper">
+                {% if cihaz.resim %}
+                <img src="{{ cihaz.resim.url }}" alt="{{ cihaz.isim }}" class="product-image">
+                {% else %}
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <i class="fas fa-spray-can" style="font-size: 4rem; color: white; opacity: 0.5;"></i>
+                </div>
+                {% endif %}
+                <span class="product-badge">Yeni</span>
+                <div class="product-actions">
+                    <button class="action-btn" title="Favorilere Ekle">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="action-btn" title="Hızlı Bakış">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="product-content">
+                <div class="product-category">Otomasyon Sistemi</div>
+                <h3 class="product-title">{{ cihaz.isim }}</h3>
+                <p class="product-description">{{ cihaz.kisa_aciklama }}</p>
+                <div class="product-footer">
+                    <div class="product-price">
+                        {{ cihaz.fiyat }} <span class="currency">TL</span>
+                    </div>
+                    <div class="view-details">
+                        Detaylar <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 2rem;">
+            <i class="fas fa-box-open" style="font-size: 4rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+            <h3 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Henüz Ürün Bulunmuyor</h3>
+            <p style="color: var(--text-light);">Ürünler yakında eklenecektir.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="section-header fade-in">
+        <span class="section-label">Neden Biz?</span>
+        <h2 class="section-title">Avantajlarımız</h2>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card fade-in">
+            <div class="feature-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h3 class="feature-title">Özelleştirilebilir</h3>
+            <p class="feature-desc">
+                İhtiyaçlarınıza özel çözümler sunuyor, 
+                sistemlerimizi işletmenize uygun şekilde yapılandırıyoruz.
+            </p>
+        </div>
+        <div class="feature-card fade-in">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="feature-title">Güvenilirlik</h3>
+            <p class="feature-desc">
+                Yüksek kalite standartlarında üretilen sistemlerimiz 
+                uzun ömürlü ve sorunsuz çalışır.
+            </p>
+        </div>
+        <div class="feature-card fade-in">
+            <div class="feature-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h3 class="feature-title">Verimlilik</h3>
+            <p class="feature-desc">
+                Otomasyon çözümlerimiz üretim hattınızın 
+                verimliliğini artırır, maliyetleri düşürür.
+            </p>
+        </div>
+        <div class="feature-card fade-in">
+            <div class="feature-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h3 class="feature-title">Teknik Destek</h3>
+            <p class="feature-desc">
+                7/24 teknik servis ve yedek parça desteği ile 
+                yanınızdayız.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-box fade-in">
+        <h2 class="cta-title">Projeleriniz İçin Hazırız</h2>
+        <p class="cta-desc">
+            Endüstriyel boya otomasyonu ihtiyaçlarınız için 
+            hemen bizimle iletişime geçin.
+        </p>
+        <a href="{% url 'iletisim' %}" class="cta-btn">
+            <i class="fas fa-phone"></i>
+            İletişime Geç
+        </a>
+    </div>
+</section>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <img src="" alt="" class="modal-image" id="modalImage">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-category">Otomasyon Sistemi</div>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-price" id="modalPrice"></div>
+            <p class="modal-description" id="modalDescription"></p>
+            
+            <div class="parts-section">
+                <h4 class="parts-title">
+                    <i class="fas fa-puzzle-piece"></i>
+                    Uyumlu Parçalar & Aksesuarlar
+                </h4>
+                <ul class="parts-list" id="modalParts">
+                    <!-- Parts will be loaded dynamically -->
+                </ul>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-phone"></i>
+                    Fiyat Teklifi Al
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Counter Animation
+    const counters = document.querySelectorAll('.stat-number');
+    const speed = 200;
+
+    const animateCounter = (counter) => {
+        const target = +counter.getAttribute('data-count');
+        const count = +counter.innerText;
+        const inc = target / speed;
+
+        if (count < target) {
+            counter.innerText = Math.ceil(count + inc);
+            setTimeout(() => animateCounter(counter), 20);
+        } else {
+            counter.innerText = target + '+';
+        }
+    };
+
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                counterObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    counters.forEach(counter => counterObserver.observe(counter));
+
+    // Modal Functions
+    function openModal(id, title, shortDesc, longDesc, price, imageUrl) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalDescription').textContent = longDesc;
+        document.getElementById('modalPrice').textContent = price + ' TL';
+        
+        const modalImage = document.getElementById('modalImage');
+        if (imageUrl) {
+            modalImage.src = imageUrl;
+            modalImage.style.display = 'block';
+        } else {
+            modalImage.style.display = 'none';
+        }
+
+        // Load parts dynamically (you can enhance this with AJAX)
+        const partsList = document.getElementById('modalParts');
+        partsList.innerHTML = `
+            <li class="part-item">
+                <span class="part-name"><i class="fas fa-check-circle"></i> Standart Konnektör Seti</span>
+                <span class="part-price">450 TL</span>
+            </li>
+            <li class="part-item">
+                <span class="part-name"><i class="fas fa-check-circle"></i> Yedek Filtre</span>
+                <span class="part-price">280 TL</span>
+            </li>
+            <li class="part-item">
+                <span class="part-name"><i class="fas fa-check-circle"></i> Montaj Aksesuarları</span>
+                <span class="part-price">150 TL</span>
+            </li>
+        `;
+
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(event) {
+        if (event && event.target !== event.currentTarget && event.target.closest('.modal')) {
+            return;
+        }
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}
